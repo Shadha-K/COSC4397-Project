@@ -1,29 +1,31 @@
-# Virtual Environment
-venv/
-env/
-ENV/
-.env
-.venv
-env.bak/
-venv.bak/
-pythonenv*
-
-# Python bytecode
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
-
-# Distribution / packaging
+*.egg
+*.egg-info/
 dist/
 build/
-*.egg-info/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# Conda environment artifacts (just in case)
+*.conda
+*.ipynb_checkpoints
 
-# IDE specific files
-.idea/
+# VSCode or PyCharm
 .vscode/
-*.swp
-*.swo
+.idea/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# System files
 .DS_Store
+Thumbs.db
+
+# Conda environment export
+env.yml
+environment.yml
+
+# If you accidentally included conda folders
+env/
+.venv/
+
