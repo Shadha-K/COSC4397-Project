@@ -1,7 +1,16 @@
+import tensorflow as tf
 from tensorflow.keras.datasets import cifar10
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 from tensorflow.keras.utils import to_categorical
+
+# Check for GPU
+physical_devices = tf.config.list_physical_devices('GPU')
+if len(physical_devices) > 0:
+    tf.config.experimental.set_memory_growth(physical_devices[0], True)
+    print(f"Using GPU: {physical_devices[0]}")
+else:
+    print("No GPU found, using CPU instead.")
 
 # Load and preprocess CIFAR-10
 (x_train, y_train), (x_test, y_test) = cifar10.load_data()
