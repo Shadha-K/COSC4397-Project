@@ -188,11 +188,22 @@ static void learn()
     int iter = max_iter;
     
     double time_taken = 0.0;
+    
+    // Create CSV file for training metrics
+    FILE *csv_file = fopen("training_time_regtil.csv", "w");
+    if (csv_file == NULL) {
+        fprintf(stderr, "Error opening file for writing\n");
+        return;
+    }
+    
+    // Write CSV header
+    fprintf(csv_file, "Epoch,Error,Time_on_GPU\n");
 
     fprintf(stdout, "Training LeNet on CIFAR-10 using ReLU activation...\n");
 
     while (iter < 0 || iter-- > 0) {
         err = 0.0f;
+        double epoch_time_start = time_taken;
 
         for (int i = 0; i < train_cnt; ++i) {
             float tmp_err;
@@ -229,6 +240,12 @@ static void learn()
 
         err /= train_cnt;
         fprintf(stdout, "Epoch %d complete, error: %e, time_on_gpu: %lf\n", max_iter - iter, err, time_taken);
+        
+        // Write epoch data to CSV
+        fprintf(csv_file, "%d,%f,%lf\n", max_iter - iter, err, time_taken);
+        
+        // Make sure data is flushed to disk after each epoch
+        fflush(csv_file);
 
         if (err < threshold) {
             fprintf(stdout, "Training complete, error less than threshold\n\n");
@@ -237,6 +254,10 @@ static void learn()
     }
     
     fprintf(stdout, "\nTotal training time: %lf seconds\n", time_taken);
+    
+    // Close the CSV file
+    fclose(csv_file);
+    fprintf(stdout, "Training data saved to training_time_regtil.csv\n");
     
     cublasDestroy(blas);
 }

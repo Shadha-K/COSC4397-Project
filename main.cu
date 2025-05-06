@@ -7,6 +7,7 @@
 #include <cublas_v2.h> // Add CUBLAS header
 #include <curand.h>
 #include <math.h>
+#include <fstream> // Added for file output
 
 // Define layers of CNN
 // Input: 32x32x3 (RGB image)
@@ -177,11 +178,17 @@ static void learn()
     int iter = max_iter;
     
     double time_taken = 0.0;
+    double epoch_time = 0.0;
+    
+    // Added: Create a file to store epoch and time data
+    std::ofstream dataFile("training_time.csv");
+    dataFile << "Epoch,Error,Time_on_GPU\n"; // CSV header
 
     fprintf(stdout, "Training LeNet on CIFAR-10 using ReLU activation...\n");
 
     while (iter < 0 || iter-- > 0) {
         err = 0.0f;
+        epoch_time = 0.0; // Time for just this epoch
 
         for (int i = 0; i < train_cnt; ++i) {
             float tmp_err;
@@ -196,7 +203,8 @@ static void learn()
                 }
             }
 
-            time_taken += forward_pass(temp_data);
+            epoch_time = forward_pass(temp_data);
+            time_taken += epoch_time;
 
             l_f.bp_clear();
             l_s1.bp_clear();
@@ -207,7 +215,8 @@ static void learn()
             cublasSnrm2(blas, 10, l_f.d_preact, 1, &tmp_err);
             err += tmp_err;
 
-            time_taken += back_pass();
+            epoch_time = back_pass();
+            time_taken += epoch_time;
             
             // Print progress periodically
             if (i % 1000 == 0) {
@@ -217,7 +226,15 @@ static void learn()
         }
 
         err /= train_cnt;
-        fprintf(stdout, "Epoch %d complete, error: %e, time_on_gpu: %lf\n", max_iter - iter, err, time_taken);
+        
+        // Calculate current epoch number
+        int current_epoch = max_iter - iter;
+        
+        fprintf(stdout, "Epoch %d complete, error: %e, time_on_gpu: %lf\n", current_epoch, err, time_taken);
+        
+        // Save epoch data to file with cumulative time
+        dataFile << current_epoch << "," << err << "," << time_taken << "\n";
+        dataFile.flush(); // Ensure data is written immediately
 
         if (err < threshold) {
             fprintf(stdout, "Training complete, error less than threshold\n\n");
@@ -225,8 +242,9 @@ static void learn()
         }
     }
     
-    fprintf(stdout, "\nTotal training time: %lf seconds\n", time_taken);
+    fprintf(stdout, "\nTotal training time recorded in training_time.csv\n");
     
+    dataFile.close();
     cublasDestroy(blas);
 }
 
