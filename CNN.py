@@ -6,14 +6,24 @@ from tensorflow.keras.utils import to_categorical
 import matplotlib.pyplot as plt
 import numpy as np
 from keras import layers, models
+import os
+# Force TensorFlow to use CPU
+# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
-# Check for GPU
-physical_devices = tf.config.list_physical_devices('GPU')
-if len(physical_devices) > 0:
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
-    print(f"Using GPU: {physical_devices[0]}")
-else:
-    print("No GPU found, using CPU instead.")
+# # Check for GPU
+# physical_devices = tf.config.list_physical_devices('GPU')
+# if len(physical_devices) > 0:
+#     tf.config.experimental.set_memory_growth(physical_devices[0], True)
+#     print(f"Using GPU: {physical_devices[0]}")
+# else:
+#     print("No GPU found, using CPU instead.")
+
+# # Confirm CPU usage
+# physical_devices = tf.config.list_physical_devices('GPU')
+# if len(physical_devices) > 0:
+#     print("GPU devices found but disabled. Forcing CPU usage.")
+# else:
+#     print("No GPU found, using CPU.")
 
 # Load CIFAR-10 dataset
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
@@ -95,7 +105,7 @@ labels = []
 # Train and store the baseline model's history
 history_baseline = lenet5.fit(
     x_train_sampled, y_train_sampled,
-    epochs=10,
+    epochs=20,
     batch_size=32,
     validation_data=(x_test_sampled, y_test_sampled),
     verbose=1
