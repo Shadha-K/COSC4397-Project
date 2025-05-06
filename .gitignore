@@ -29,3 +29,6 @@ environment.yml
 env/
 .venv/
 
+data/cifar-10-binary.tar.gz
+
+
